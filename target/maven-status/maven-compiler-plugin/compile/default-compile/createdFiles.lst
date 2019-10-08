@@ -1,0 +1,8 @@
+com/idcard/Application.class
+com/idcard/controller/UploadController.class
+com/idcard/utils/GetRequestJsonUtils.class
+com/idcard/service/impl/UserServiceImpl.class
+com/idcard/dao/UserDao.class
+com/idcard/service/UserService.class
+com/idcard/config/MyWebMvcConfigurerAdapter.class
+com/idcard/entity/IdUser.class

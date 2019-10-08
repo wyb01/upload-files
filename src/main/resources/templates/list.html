@@ -1,0 +1,133 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>认证列表</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" th:href="@{../static/css/bootstrap.css}" />
+
+    <script th:src="@{../static/js/jquery-2.1.1.js}"></script>
+    <script th:src="@{../static/js/bootstrap.js}"></script>
+</head>
+
+<body>
+
+    <div class="container" style="width:70%;padding-top: 300px">
+        <div style="padding-bottom:20px">
+            <input type="button" class="submit" value="首页" onclick="index()"/>
+        </div>
+        <table class="table table-striped">
+            <tr>
+                <th>序号</th>
+                <th>用户名称</th>
+                <th>证件类型</th>
+                <th>证件号</th>
+                <th>正面照信息</th>
+                <th>反面照信息</th>
+                <th>手持照片信息</th>
+                <th>审核状态</th>
+                <th>操作</th>
+            </tr>
+            <tr th:each="user : ${pageInfo.list}">
+                <td th:text="${userStat.index+1}"></td>
+                <td th:text="${user.userName}"></td>
+                <td th:if="${user.type}=='1'">身份证</td>
+                <td th:if="${user.type}=='2'">护照</td>
+                <td th:if="${user.type}=='3'">驾照</td>
+                <td th:if="${user.type}=='4'">军官证</td>
+                <td th:text="${user.number}"></td>
+                <td th:text="${user.file1}"></td>
+                <td th:text="${user.file2}"></td>
+                <td th:text="${user.file3}"></td>
+                <td th:if="${user.status}=='0'">未审核</td>
+                <td th:if="${user.status}=='1'">审核通过</td>
+                <td th:if="${user.status}=='2'">审核未通过</td>
+                <td>
+                    <button type="button" th:onclick="'check(\''+${user.userId}+'\')'">审核</button>
+                    <button type="button" th:onclick="'deleteById(\''+${user.userId}+'\')'">删除</button>
+                </td>
+            </tr>
+        </table>
+
+        <nav style = "padding-left:40%">
+            <ul class="pagination">
+                <li>
+                    <a  aria-label="Previous" style="padding-right:10px;color:#0275d8">
+                        <span aria-hidden="true">总页数</span>
+                        <span th:text="${totalPages}"></span>
+                    </a>
+                </li>
+
+                <li style="padding-left:10px;padding-right:10px;">
+                    <a  aria-label="Previous" style="padding-right:10px;color:#0275d8">
+                        <span aria-hidden="true">当前页</span>
+                        <span th:text="${pageNum}"></span>
+                    </a>
+                </li>
+                <li style="padding-right:10px;">
+                    <a th:href="@{${'getAllUsers'}(pageNum=1,pageSize=${pageSize})}" aria-label="Next">
+                        <span aria-hidden="true">首页</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:if="${not isFirstPage}" th:href="@{${'getAllUsers'}(pageNum=${pageNum-1},pageSize=${pageSize})}" aria-label="Previous">
+                        <span aria-hidden="true">上一页</span>
+                    </a>
+                    <a th:if="${isFirstPage}" href="javascript:void(0);" aria-label="Previous" style="padding-right:10px;">
+                        <span aria-hidden="true">上一页</span>
+                    </a>
+                </li>
+
+                <li th:each="pageNo : ${#numbers.sequence(1, totalPages)}">
+                    <a th:if="${pageNum eq pageNo}" href="javascript:void(0);">
+                        <span th:text="${pageNo}"></span>
+                    </a>
+
+                    <a th:if="${not (pageNum eq pageNo)}" th:href="@{${'getAllUsers'}(pageNum=${pageNo},pageSize=${pageSize})}" style="padding-left:10px;padding-right:10px;">
+                        <span th:text="${pageNo}"></span>
+                    </a>
+                </li>
+
+                <li>
+                    <a th:if="${not isLastPage}" th:href="@{${'getAllUsers'}(pageNum=${pageNum+1},pageSize=${pageSize})}" aria-label="Next">
+                        <span aria-hidden="true">下一页</span>
+                    </a>
+                    <a th:if="${isLastPage}" href="javascript:void(0);" aria-label="Next" style="padding-left:10px">
+                        <span aria-hidden="true">下一页</span>
+                    </a>
+                </li>
+                <li style="padding-left:10px;">
+                    <a th:href="@{${'getAllUsers'}(pageNum=${totalPages},pageSize=${pageSize})}" aria-label="Next">
+                        <span aria-hidden="true">尾页</span>
+                    </a>
+                </li>
+                <li>
+                    <a  aria-label="Previous" style="padding-left:10px;color:#0275d8">
+                        <span aria-hidden="true">总记录数</span>
+                        <span th:text="${total}"></span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <script type="text/javascript">
+        function index(){
+            location.href = '/index';
+        }
+        function check(userId){
+           // $(window).attr('location','/check/'+userId);
+            window.location.href = '/check/'+userId;
+        }
+
+        function  deleteById(userId){
+            if(confirm("确认删除？")){
+               window.location.href = '/deleteById/'+userId;
+            }
+            //$(window).attr('location','/deleteById/'+userId);
+
+        }
+
+    </script>
+
+</body>
+</html>

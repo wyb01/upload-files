@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+  <body>
+        <script th:src="@{../static/js/validation.js}" type="text/javascript"></script>
+        <script type="text/javascript" src="../static/js/jquery-2.1.1.min.js"></script>
+
+        <link rel="stylesheet" th:href="@{../static/css/style2.css}" />
+        <link rel="stylesheet" th:href="@{../static/css/style3.css}" />
+        <link rel="stylesheet" th:href="@{../static/css/style.css}" />
+
+        <style type="text/css">
+            .alertWindowContent h1,p{text-align: center;font-size: 18px;font-weight: bolder;}
+            .alertWindowContent input{width: 100px; height: 50px;cursor: pointer;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;}
+            .textInput {
+                width: 300px;
+                height: 22px;
+                border: 1px solid #95E0EF;
+                background-color: #f3fcfe;
+                border-left-width: 2px;
+                padding: 5px 0 0 2px;
+                float: left;
+            }
+            #successImg{
+                width: 58px;
+                height: 58px;
+                margin: 0px auto;
+                background: url("../static/images/warning.png") no-repeat ;
+                border:none;
+            }
+
+
+        </style>
+
+        <div class="form_content">
+
+            <fieldset>
+                <legend>实名认证信息</legend>
+
+                <div class="form-row">
+                    <div class="field-label"><label for="field2">用户名称</label>:</div>
+                    <div class="field-widget"><input name="field2" id="field2" th:value="${user.userName}" readonly="readonly" class="required"/></div>
+                </div>
+                <div class="form-row">
+                    <div class="field-label"><label for="field2">证件类型</label>:</div>
+                    <div class="field-widget">
+                        <span th:if="${user.type=='1'}" class="textInput">
+                            身份证
+                        </span>
+                        <span th:if="${user.type=='2'}" class="textInput">
+                            护照
+                        </span>
+                        <span th:if="${user.type=='3'}" class="textInput">
+                            驾照
+                        </span>
+                        <span th:if="${user.type=='4'}" class="textInput">
+                            军官证
+                        </span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="field-label"><label for="field2">证件号</label>:</div>
+                    <div class="field-widget"><input name="field2" id="field2" th:value="${user.number}" readonly="readonly" class="required"/></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field-label"><label for="field2">身份证件正面照片</label>:</div>
+                    <img th:src="${user.file1}" height="200px" width="200px"/>
+                </div>
+
+                <div class="form-row">
+                    <div class="field-label"><label for="field2">身份证件反面照片</label>:</div>
+                    <img th:src="${user.file2}" height="200px" width="200px"/>
+                </div>
+
+                <div class="form-row">
+                    <div class="field-label"><label for="field2">手持身份证件照片</label>:</div>
+                    <img th:src="${user.file3}" height="200px" width="200px"/>
+                </div>
+            </fieldset>
+
+            <form id ="checkForm" action="/checkIdCard" method="post">
+                <input type="hidden" name="userId" th:value="${user.userId}"></input>
+                <fieldset>
+                    <legend class="optional">审核结果</legend>
+                    <div class="form-row-select" style="width:500px">
+                        <fieldset>
+                            <legend class="optional">是否通过</legend>
+                            <label class="left" style="padding-left:170px">
+                                <input type="radio" class="radio_input" value="1" checked="checked" name = "status"  id="field11-male" />通过 <br />
+                            </label>
+                            <label class="right" style="padding-left:50px">
+                                <input type="radio" class="radio_input" id="field11-female" name = "status"  value="2"/>未通过<br />
+                            </label>
+                        </fieldset>
+                    </div>
+                    <div class="form-row">
+                        <div class="field-label"><label for="field12">审核意见</label>:</div>
+                        <div class="field-widget">
+                            <textarea class="optional" id = "content" name ="content"></textarea>
+                        </div>
+                    </div>
+                </fieldset>
+                <input type="button" class="submit" value="提交" onclick="submitCheck()"/>
+                <input class="reset" type="button" value="关闭" onclick="closeCheck()" />
+            </form>
+
+
+        </div>
+  </body>
+<script type="text/javascript">
+
+    function submitCheck(){
+        var message = "";
+        $.ajax({
+            type:"post",
+            url:"/checkIdCard",
+            dataType: "json",
+            data:$('#checkForm').serialize(),
+            success: function (result) {
+               message = result.msg+"三秒后跳转";
+                jQuery.alertWindow(message);
+                setTimeout(function(){
+                    $(window).attr('location','/getAllUsers');
+                },3000)
+            },
+            error : function() {
+                message="异常！两秒后跳转";
+                jQuery.alertWindow(message);
+                setTimeout(function(){
+                    $(window).attr('location','/index');
+                },2000)
+            }
+        })
+    }
+
+    jQuery.extend({
+        alertWindow:function(e,n){var e=e,r;n===undefined?r="#00a8b7":r=n;
+            if($("body").find(".alertWindow1").length===0){
+                var i='<div class="alertWindow1" style="width: 100%;height: 100%; background:rgba(0,0,0,0.5);position: fixed; left:0px; top: 0px; z-index: 9999;"><div  style="width: 360px; height: 170px;background: #FFF;margin: 300px auto;border: 2px solid #CFCFCF;">'+'<div  style="width: inherit;height: 20px;">'
+                    +'<div class="alertWindowCloseButton1" style="float: right; width: 10px; height: 30px;margin-right:5px;font-family:\'microsoft yahei\';color:'+r+';cursor: pointer;"></div>'+"</div>"+'<div id="successImg" class="alertWindowTitle" style="margin-top:10px;text-align:center;font-family:\'Verdana, Geneva, Arial, Helvetica, sans-serif\';font-size: 18px;font-weight: normal;color: '+r+';">'+
+                    "</div>"+'<div class="alertWindowContent" style="width:360px;height: 40px;text-align:center;font-size: 18px;color: #7F7F7F;margin-top:10px;">'+e+"</div>"+"</div>"+"</div>";
+                $("body").append(i);
+                var s=$(".alertWindow1");
+            }
+        }
+    })
+
+    function closeCheck(){
+        window.location.href="/getAllUsers";
+    }
+
+</script>
+</html>

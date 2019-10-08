@@ -1,0 +1,49 @@
+spring:
+   datasource:
+     driver-class-name: com.mysql.jdbc.Driver
+     url: jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
+     username: root
+     password: 12345678
+     druid:
+       initialSize: 5
+       minIdle: 5
+       maxActive: 20
+       maxWait: 60000
+       timeBetweenEvictionRunsMillis: 60000
+       minEvictableIdleTimeMillis: 300000
+       validationQuery: SELECT 1
+       testWhileIdle: true
+       testOnBorrow: true
+       testOnReturn: false
+       poolPreparedStatements: true
+       maxPoolPreparedStatementPerConnectionSize: 20
+       filters: stat,wall
+       connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+       stat-view-servlet:
+         allow: 127.0.0.1
+   thymeleaf:
+     mode: HTML5
+     encoding: UTF-8
+     content-type: text/html
+   #  prefix: classpath:/templates/
+     cache: false
+
+
+   devtools:
+     restart:
+       enabled: true
+       additional-paths: src/main/java
+   servlet:
+     multipart:
+       enabled: true
+       max-file-size: 20MB
+       max-request-size: 50MB
+   resources:
+     static-locations: classpath:/static
+mybatis:
+   type-aliases-package: com.idcard.entity
+   mapper-locations: classpath:/mybatis-mappers/*
+   configuration:
+     mapUnderscoreToCamelCase: true
+file:
+   path: /Users/wj/Pictures/

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="../static/scriptaculous/lib/prototype.js" type="text/javascript"></script>
+    <script src="../static/scriptaculous/src/effects.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../static/js/validation.js"></script>
+
+    <link rel="stylesheet" th:href="@{../static/css/style2.css}" />
+    <link rel="stylesheet" th:href="@{../static/css/style3.css}" />
+    <link rel="stylesheet" th:href="@{../static/css/style.css}" />
+</head>
+<body>
+
+<div class="form_content" style="width:800px">
+    <form enctype="multipart/form-data" action="/uploads" method="post"  style="padding-bottom:50px">
+        <fieldset>
+            <legend>实名认证</legend>
+
+            <div class="form-row">
+                <div class="field-label"><label for="field5">用户名称</label>:</div>
+                <div class="field-widget"><input name="userName" id="userName" class="required validate-email" title="请填写名称" /></div>
+            </div>
+
+            <div class="form-row">
+                <div class="field-label"><label for="field6">证件类型</label>:</div>
+                <div class="field-widget">
+                    <select id="type" name="type" class="validate-selection" title="Choose your department">
+                        <option>请选择</option>
+                        <option value="1">身份证</option>
+                        <option value="2">护照</option>
+                        <option value="3">驾照</option>
+                        <option value="4">军官证</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="field-label"><label for="field5">证件号</label>:</div>
+                <div class="field-widget"><input name="number" id="number" class="required validate-email" title="请填写证件号码" /></div>
+            </div>
+            <div class="form-row">
+                <div class="field-label"><label for="field7">正面照</label>:</div>
+                <div class="field-widget"><input type="file" name="file" id="field7" class="required validate-password" title="Enter a password greater than 6 characters" /></div>
+            </div>
+
+            <div class="form-row">
+                <div class="field-label"><label for="field9">反面照</label>:</div>
+                <div class="field-widget"><input type="file" name="file" id="field8" class="required validate-password-confirm" title="Enter the same password for confirmation" /></div>
+            </div>
+
+            <div class="form-row">
+                <div class="field-label"><label for="field9">手持照片</label>:</div>
+                <div class="field-widget"><input type="file" name="file" id="field8" class="required validate-password-confirm" title="Enter the same password for confirmation" /></div>
+            </div>
+
+        </fieldset>
+
+
+        <input type="submit" class="submit" value="上传"/>
+        <input class="reset" type="reset" value="重置" />
+    </form>
+
+    <fieldset>
+        <legend class="optional">认证列表</legend>
+        <div class="form-row" id="userInfo">
+
+        </div>
+    </fieldset>
+
+</div>
+
+<script type="text/javascript" src="../static/js/jquery-2.1.1.min.js"></script>
+<script LANGUAGE="javascript">
+    $(function(){
+        $.ajax({
+            type:"POST",
+            url:"/getAll",
+            success:function(result){
+                var obj = result;
+                var tbody = '<tr style="text-align:center"><td style="border:#cccccc solid 1px;width:50px;height:30px">序号' +
+                    '</td><td style="border:#cccccc solid 1px;width:50px;">用户名称</td><td style="border:#cccccc solid 1px;width:60px">附件1</td><td style="border:#cccccc solid 1px;width:60px">附件2' +
+                    '</td><td style="border:#cccccc solid 1px;width:60px">附件3</td><td style="border:#cccccc solid 1px;width:50px">审核状态</td><td style="border:#cccccc solid 1px;width:50px">操作</td></tr>';
+                var detail = "";
+                $.each(obj,function(n,value) {
+                    var sta = "";
+                    if(value.status==0){
+                        sta+='<td style="border:#cccccc solid 1px;">未审核</td>';
+                    }else if(value.status==1){
+                        sta+='<td style="border:#cccccc solid 1px;">审核通过</td>';
+                    }else if(value.status==2){
+                        sta+='<td style="border:#cccccc solid 1px;">审核未通过</td>';
+                    }
+                    detail += ' <tr style="text-align:center;"> <td style="border:#cccccc solid 1px;height:20px"> ' + (n+1) +' </td> <td style="border:#cccccc solid 1px;">'+ value.userName +'</td > <td style="border:#cccccc solid 1px;">'
+                        + value.file1 +'</td > <td style="border:#cccccc solid 1px;">' + value.file2 +'</td > <td style="border:#cccccc solid 1px;">' + value.file3
+                        +'</td >'+sta+'<td style="border:#cccccc solid 1px;"><button type="button" onclick="check('+value.userId+')">审核</button><button type="button" onclick="deleteById('+value.userId+')">删除</button></td></tr>';
+                });
+                tbody+=detail;
+                $("#userInfo").append(tbody);
+            },
+        });
+    })
+
+    function check(userId){
+        $(window).attr('location','/check/'+userId);
+    }
+
+    function  deleteById(userId){
+        alert("确认删除？");
+        $(window).attr('location','/deleteById/'+userId);
+    }
+
+</script>
+
+<script type="text/javascript">
+    function formCallback(result, form) {
+        window.status = "valiation callback for form '" + form.id + "': result = " + result;
+    }
+
+    var valid = new Validation('test', {immediate : true, onFormValidate : formCallback});
+    Validation.addAllThese([
+        ['validate-password', '> 6 characters', {
+            minLength : 7,
+            notOneOf : ['password','PASSWORD','1234567','0123456'],
+            notEqualToField : 'field1'
+        }],
+        ['validate-password-confirm', 'please try again.', {
+            equalToField : 'field8'
+        }]
+    ]);
+</script>
+
+
+</body>
+</html>
